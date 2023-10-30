@@ -3,17 +3,21 @@ from utility import all_rotations
 from utility import main_state
 from utility import get_winner
 from constants import *
+import math
 
 
 class BoardState:
 
     def __init__(self, state_array):
-        assert len(state_array) == BOARD_SIZE * BOARD_SIZE
+        board_size = int(math.sqrt(len(state_array)))
+        assert board_size in SUPPORTED_BOARD_SIZES
         for item in state_array:
             assert item in [X, O, BLANK]
-        self.states = all_rotations(state_array)
+        self.states = all_rotations(state_array, board_size)
         self.state = main_state(self.states)
-        self.winner = get_winner(self.state)
+        self.winner = get_winner(self.state, board_size)
+        self.board_size = board_size
+        self.steps_from_filled = state_array.count(BLANK)
 
     @classmethod
     def from_string(cls, row):
@@ -26,8 +30,8 @@ class BoardState:
     def __repr__(self):
         values = [*str(self)]
         groups = []
-        for group_size in range(0, len(self.state), BOARD_SIZE):
-            groups.append('| ' + ' '.join(values[group_size:(group_size + BOARD_SIZE)]) + ' |')
+        for group_size in range(0, len(self.state), self.board_size):
+            groups.append('| ' + ' '.join(values[group_size:(group_size + self.board_size)]) + ' |')
         return '\n' + '\n'.join(groups)
 
     def __str__(self):

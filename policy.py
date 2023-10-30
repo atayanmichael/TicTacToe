@@ -19,14 +19,15 @@ def find_action_values(state, all_states):
 
 
 class Policy:
-    def __init__(self, action_item, discount_factor=0.9, **kwargs):
+    def __init__(self, action_item, board_size=3, discount_factor=0.9, **kwargs):
         self.discount_factor = discount_factor
         self.transition_reward = kwargs.get('transition_reward', .05)
         self.win_reward = kwargs.get('win_reward', 1)
         self.lose_reward = kwargs.get('lose_reward', -1)
         self.tie_reward = kwargs.get('tie_reward', 0)
         self.action_item = action_item
-        self.state_holder = StateHolder()
+        self.state_holder = StateHolder(board_size=board_size)
+        self.board_size = board_size
 
     @property
     def states(self):
@@ -36,8 +37,10 @@ class Policy:
     def states(self, states):
         self.state_holder.states.update(states)
 
-    def calculate_values(self):
+    def calculate_values(self, iteration):
         for state in self.states.keys():
+            if state.steps_from_filled != iteration:
+                continue
             if state.is_terminal or state.get_action_item() == self.action_item:
                 yield state, self.calculate_value(state)
 
@@ -56,19 +59,19 @@ class Policy:
         else:
             return self.tie_reward
 
-    def iterate_value_algorithm(self, iterations):
-        for _ in range(iterations):
+    def train(self):
+        for iteration in range(self.board_size * self.board_size + 1):
             updated_states = {}
-            for key, value in self.calculate_values():
+            for key, value in self.calculate_values(iteration):
                 updated_states[key] = value
-            self.states = updated_states  # simultaneous update
+            self.states = updated_states
 
     def save(self):
-        with open(f'policy_{CELLS[self.action_item]}.txt', 'w') as f:
+        with open(f'policy_{CELLS[self.action_item]}_{self.board_size}.txt', 'w') as f:
             f.write(json.dumps({str(key): value for key, value in self.states.items()}))
 
     def load(self):
-        with open(f'policy_{CELLS[self.action_item]}.txt', 'r') as f:
+        with open(f'policy_{CELLS[self.action_item]}_{self.board_size}.txt', 'r') as f:
             self.states = {BoardState.from_string(key): value for key, value in json.load(f).items()}
 
     def play(self, state):

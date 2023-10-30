@@ -14,6 +14,6 @@ CELLS_REVERSED = {
     'O': O
 }
 
-BOARD_SIZE = 3
+SUPPORTED_BOARD_SIZES = [3, 4]
 
 TIE = 0

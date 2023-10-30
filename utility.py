@@ -1,10 +1,9 @@
-import numpy
 import numpy as np
 from constants import *
 
 
-def all_rotations(array):
-    array = to_2d(array)
+def all_rotations(array, board_size):
+    array = to_2d(array, board_size)
     rotations = []
     add_rotations(array, rotations)
     array = np.fliplr(array)
@@ -12,19 +11,20 @@ def all_rotations(array):
     return rotations
 
 
-def to_2d(array):
-    return np.array(array).reshape((BOARD_SIZE, BOARD_SIZE))
+def to_2d(array, board_size):
+    return np.array(array).reshape((board_size, board_size))
 
 
-def get_winner(array):
+def get_winner(array, board_size):
+
     def has_winner(sum_of):
-        if BOARD_SIZE in sum_of:
+        if board_size in sum_of:
             return X
-        if -BOARD_SIZE in sum_of:
+        if -board_size in sum_of:
             return O
         return None
 
-    array_2d = to_2d(array)
+    array_2d = to_2d(array, board_size)
     if winner := has_winner(np.sum(array_2d, axis=0)):
         return winner
     if winner := has_winner(np.sum(array_2d, axis=1)):

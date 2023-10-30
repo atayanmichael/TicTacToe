@@ -1,7 +1,6 @@
 import constants
 from state import BoardState
 from constants import BLANK
-from constants import BOARD_SIZE
 from constants import X
 from utility import DefaultDict
 
@@ -22,13 +21,14 @@ def possible_states(state):
 
 
 class StateHolder:
-    def __init__(self):
+    def __init__(self, board_size=3):
         self.states = DefaultDict()
+        self.board_size = board_size
         self.store_states()
 
     def store_states(self):
         new_states = set()
-        new_states.add(BoardState([BLANK] * BOARD_SIZE * BOARD_SIZE))
+        new_states.add(BoardState([BLANK] * self.board_size * self.board_size))
         while len(new_states):
             result = set()
             for state in new_states:
