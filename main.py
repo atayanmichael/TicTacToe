@@ -1,7 +1,7 @@
-from state import BoardState
 from policy import Policy
-from constants import *
-from state_management import apply_action
+from constants import X
+from constants import O
+from game import Game
 
 
 # the commented code is for training to play as X and O respectively
@@ -15,22 +15,15 @@ from state_management import apply_action
 # o_policy.train()
 # o_policy.save()
 
-def play(policy):
-    state = BoardState([BLANK] * policy.board_size * policy.board_size)
-    print(repr(state))
-    while not state.is_terminal:
-        # AI turn
-        if state.get_action_item() == policy.action_item:
-            state = policy.play(state)
-            print(repr(state))
-        else:
-            user_input = int(input(f'your_turn, input number from 1 to {policy.board_size * policy.board_size}:\n')) - 1
-            state = apply_action(state, (-policy.action_item, user_input))
-    print(f'winner: {CELLS[state.winner]}')
+
+def user_turn(board_size):
+    return input(f'your_turn, input number from 1 to {board_size * board_size}:\n')
 
 
-policy = Policy(O)
-policy.load()
-play(policy)
-while input(f'play more?\n') == 'yes':
-    play(policy)
+def play_more():
+    return input(f'play more?\n')
+
+
+policy = Policy(X, board_size=3, saved=True)
+game = Game(policy, user_turn)
+game.start_playing(play_more)

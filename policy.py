@@ -19,15 +19,17 @@ def find_action_values(state, all_states):
 
 
 class Policy:
-    def __init__(self, action_item, board_size=3, discount_factor=0.9, **kwargs):
-        self.discount_factor = discount_factor
+    def __init__(self, action_item, board_size=3, saved=False, **kwargs):
+        self.discount_factor = kwargs.get('discount_factor', .9)
         self.transition_reward = kwargs.get('transition_reward', .05)
         self.win_reward = kwargs.get('win_reward', 1)
         self.lose_reward = kwargs.get('lose_reward', -1)
         self.tie_reward = kwargs.get('tie_reward', 0)
         self.action_item = action_item
-        self.state_holder = StateHolder(board_size=board_size)
+        self.state_holder = StateHolder(board_size=board_size, saved=saved)
         self.board_size = board_size
+        if saved:
+            self.load()
 
     @property
     def states(self):

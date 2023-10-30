@@ -21,10 +21,11 @@ def possible_states(state):
 
 
 class StateHolder:
-    def __init__(self, board_size=3):
+    def __init__(self, board_size=3, saved=False):
         self.states = DefaultDict()
         self.board_size = board_size
-        self.store_states()
+        if not saved:
+            self.store_states()
 
     def store_states(self):
         new_states = set()
